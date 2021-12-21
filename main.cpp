@@ -1,20 +1,25 @@
 #include "main.hpp"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <netdb.h>
 #include <netinet/ip.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <vector>
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <thread>
 #include <unistd.h>
 
+#include <cstring>
+
 #include <errno.h>
+#include <utility>
 
 #define PORT "8080"
 #define MAX_CONNECTIONS 1000000
@@ -67,13 +72,49 @@ socket_t start_server(const char *port) {
   return server;
 }
 
+std::vector<std::string> tokenize(const std::string &s,
+                                  std::string delimiter = " ") {
+  std::vector<std::string> tokens;
+
+  int start = 0;
+  int end = s.find(delimiter);
+
+  while (end != -1) {
+    tokens.push_back(s.substr(start, end - start));
+    start = end + delimiter.size();
+    end = s.find(delimiter, start);
+  }
+
+  tokens.push_back(s.substr(start));
+
+  return tokens;
+}
+
 void respond(char const *req, size_t req_len, socket_t client) {
-  std::cout << "SAKSDLJASDASDASD: " << client << '\n';
-  char sas[] = "HTTP/1.1 200 OK\n"
+  auto headers = tokenize(req, "\n");
+  std::map<std::string, std::string> headers_map;
+
+  std::string first_line{headers[0]};
+  headers.erase(headers.begin());
+
+  auto first_line_tokens = tokenize(first_line);
+
+  std::for_each(headers.begin(), headers.end(), [&headers_map](std::string s) {
+    s.erase(std::remove_if(s.begin(), s.end(), isspace), s.end());
+
+    if (!s.empty()) {
+      auto tokens = tokenize(s);
+      std::cerr << "sas: " << tokens[0] << '\n';
+      headers_map.emplace(tokens[0], tokens[1]);
+      std::cerr << "ke\n";
+    }
+  });
+
+  char res[] = "HTTP/1.1 200 OK\n"
                "\n"
                "<h1>SASKE</h1>";
 
-  int sent = send(client, sas, strlen(sas) + 1, 0);
+  int sent = send(client, res, strlen(res) + 1, 0);
 
   if (sent < 0) {
     fprintf(stderr, "Error sending response: %d\n", errno);
@@ -112,8 +153,10 @@ void serve(socket_t server) {
         ssize_t rd = read(clients[current_client], buf, sizeof(buf));
         buf[rd] = '\0';
 
-        threads[current_client] = new std::thread(
-            [buf, &clients, current_client]() { respond(buf, strlen(buf) + 1, clients[current_client]); });
+        threads[current_client] =
+            new std::thread([buf, &clients, current_client]() {
+              respond(buf, strlen(buf) + 1, clients[current_client]);
+            });
       }
     } else {
       if (threads[current_client] && threads[current_client]->joinable()) {
