@@ -23,7 +23,7 @@ tokenize(const std::string &s, const std::string &del = " ", int limit = -1) {
     return tokens;
 }
 
-namespace simple_http {
+namespace kshttp {
 std::optional<Request> Request::parse(const std::string &raw_req) {
     Request req;
 

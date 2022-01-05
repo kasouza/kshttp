@@ -6,7 +6,7 @@
 #include <map>
 #include <string>
 
-namespace simple_http {
+namespace kshttp {
 class Response {
   private:
     std::string _http_version;

@@ -4,7 +4,7 @@
 #include <sstream>
 #include <sys/socket.h>
 
-namespace simple_http {
+namespace kshttp {
 Response::Response(socket_t client, std::string http_version)
     : _client{client}, _http_version{http_version} {}
 

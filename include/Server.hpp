@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-namespace simple_http {
+namespace kshttp {
 
 class Request;
 class Response;

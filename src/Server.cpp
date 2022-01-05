@@ -12,7 +12,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-namespace simple_http {
+namespace kshttp {
 Server::Server(const std::string &port, router_t router)
     : _router{router}, _port{port} {
     addrinfo *results;
