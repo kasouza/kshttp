@@ -1,20 +1,19 @@
-OBJS := main.o Server.o Request.o Response.o
-LDLIBS := -lpthread
-CXXFLAGS := -g --std=c++17
+OBJS := $(addprefix build/, main.o Server.o Request.o Response.o)
+# LDLIBS := -lpthread
+CXXFLAGS := -g --std=c++17 -Iinclude
 
-all: kshttp
+all: $(OBJS)
+	$(CXX) -o kserve -lpthread $(OBJS)
 
-Request.o: Request.cpp Request.hpp
+build/main.o: src/main.cpp include/Request.hpp include/Response.hpp include/Server.hpp
+build/Request.o: src/Request.cpp include/Request.hpp
+build/Response.o: src/Response.cpp include/Response.hpp
+build/Server.o: src/Server.cpp include/Request.hpp include/Response.hpp include/Server.hpp
 
-Response.o: Response.cpp Response.hpp Server.hpp
+build/%.o: src/%.cpp
+	$(CXX) -Iinclude -c -o $@ $<
 
-Server.o: Request.o Server.cpp Server.hpp
-
-main.o: main.cpp Server.o
-
-kshttp: $(OBJS)
-	$(CXX) -o c-serve ${LDLIBS} $(CXXFLAGS) $(OBJS)
-
-.PHONY: clean
 clean:
 	rm $(OBJS)
+
+.PHONY: clean

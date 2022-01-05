@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 
-std::vector<std::string> tokenize(const std::string &s,
-                                  const std::string &del = " ",
-                                  int limit = -1) {
+// Spit a string into tokens
+static std::vector<std::string>
+tokenize(const std::string &s, const std::string &del = " ", int limit = -1) {
     std::vector<std::string> tokens;
 
     int start = 0;
@@ -27,18 +27,37 @@ namespace simple_http {
 std::optional<Request> Request::parse(const std::string &raw_req) {
     Request req;
 
+    if (raw_req.empty()) {
+        std::cerr << "Empty request.\n";
+        return {};
+    }
+
     // Split headers from body
     int empty_line = raw_req.find("\r\n\r\n");
     std::string headers_str = raw_req.substr(0, empty_line);
     std::string body = raw_req.substr(empty_line + 4); // After the empty line
 
-    // Split into individual headers
+    if (headers_str.empty()) {
+        std::cerr << "Empty headers.\n";
+        return {};
+    }
+
+    // Split string into individual headers
     auto header_tokens{tokenize(headers_str, "\r\n")};
+    if (header_tokens.empty()) {
+        std::cerr << "Invalid headers: " << headers_str << '\n';
+        return {};
+    }
 
     // Get the request line and remove it from
     // the headers vector
     std::string request_line{header_tokens[0]};
     header_tokens.erase(header_tokens.begin());
+
+    if (request_line.empty()) {
+        std::cerr << "Empty request line.\n";
+        return {};
+    }
 
     for (auto &h : header_tokens) {
         auto tokens{tokenize(h, ": ", 2)};

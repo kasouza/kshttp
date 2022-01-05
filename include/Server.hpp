@@ -23,11 +23,25 @@ class Server {
     std::string _port;
 
   public:
+  /**
+   * @brief Construct a new Server object.
+   * 
+   * @param port A port to listen to
+   * @param router A user defined function that will handle the routing
+   */
     Server(const std::string &port, router_t router);
     ~Server();
 
+    /**
+     * @brief Start the server.
+     * 
+     */
     void serve();
 
+    /**
+     * @brief Stops the server.
+     * 
+     */
     inline void stop() { _is_running = false; }
 };
 

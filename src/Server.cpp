@@ -90,21 +90,14 @@ void Server::serve() {
         auto optional{Request::parse(raw_req)};
         if (!optional.has_value()) {
             // This should not exit the program, instead send a 500 status page
-            fprintf(stderr, "Error trying to parse request.");
+            std::cerr << "Error trying to parse request.\n";
             exit(EXIT_FAILURE);
         }
 
         Request req = optional.value();
-        Response res{ client, req.get_http_version() };
+        Response res{client, req.get_http_version()};
 
         _router(req, res);
-        // Res.send()
-
-        // std::cout << req.get_method() << " " << req.get_path() << " "
-        //           << req.get_http_version() << std::endl;
-        // for (auto &[k, v] : req.get_headers()) {
-        //     std::cout << k << ": " << v << std::endl;
-        // }
 
         close(client);
     }
