@@ -17,10 +17,13 @@ The default program will listen to `localhost:8080` and respond with something A
 
 That's pretty much it by now.
 
-# Planned Features
+# TODO
 - Cross-platform
 - Responding automatically when there is a bad request or a route is invalid or thing like that.
 - Status texts
 - A cleaner API
 - A bit more safety
-- Make it into an actual library
+- Write unit tests
+- Make a script for integration testing
+- ~~Setup test~~(i still need to write then though)
+- ~~Make it into an actual library~~
