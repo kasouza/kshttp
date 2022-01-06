@@ -45,7 +45,7 @@ Server::Server(const std::string &port, router_t router)
         if (bind(_server, result->ai_addr, result->ai_addrlen) == 0) {
             break;
         }
-
+        
         close(_server);
     }
 

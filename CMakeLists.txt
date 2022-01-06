@@ -1,20 +1,23 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(kshttp VERSION 0.1.0)
 
-# include(CTest)
-# enable_testing()
+include(CTest)
+enable_testing()
 
-set(SOURCES main.cpp
-    Request.cpp
-    Response.cpp
-    Server.cpp
+Include(FetchContent)
+
+FetchContent_Declare(
+  Catch2
+  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+  GIT_TAG        v3.0.0-preview3
 )
 
-# Prepend all the source filenames with /src/
-list(TRANSFORM SOURCES PREPEND ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+FetchContent_MakeAvailable(Catch2)
 
-add_executable(kshttp ${SOURCES})
-target_include_directories(kshttp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include/)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_BINARY_DIR}/_deps/catch2-src/extras)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/src)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 # set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
