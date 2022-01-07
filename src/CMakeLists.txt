@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.0.0)
 set(SOURCES
     Request.cpp
     Response.cpp
+    Router.cpp
     Server.cpp
+    Status.cpp
 )
 
 add_library(kshttp STATIC ${SOURCES})

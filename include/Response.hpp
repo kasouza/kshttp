@@ -11,7 +11,7 @@ class Response {
   private:
     std::string _http_version;
     socket_t _client;
-    std::string _status_code{"200"};
+    unsigned short _status_code{ 200 };
     std::map<std::string, std::string> _headers;
     std::string _body;
 
@@ -30,7 +30,7 @@ class Response {
      * @param code HTTP status code
      * @return Response& A reference to this response
      */
-    Response &status_code(std::string code);
+    Response &status(unsigned short status);
     /**
      * @brief Set a header to be sent to the client
      *

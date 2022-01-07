@@ -1,6 +1,8 @@
 #include "Server.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "Router.hpp"
+#include "Status.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -13,7 +15,7 @@
 #include <unistd.h>
 
 namespace kshttp {
-Server::Server(const std::string &port, router_t router)
+Server::Server(const std::string &port, Router &router)
     : _router{router}, _port{port} {
     addrinfo *results;
     addrinfo hints;
@@ -45,7 +47,7 @@ Server::Server(const std::string &port, router_t router)
         if (bind(_server, result->ai_addr, result->ai_addrlen) == 0) {
             break;
         }
-        
+
         close(_server);
     }
 
@@ -88,19 +90,18 @@ void Server::serve() {
         raw_req[rd] = '\0';
 
         auto optional{Request::parse(raw_req)};
-        if (!optional.has_value()) {
-            // This should not exit the program, instead send a 500 status page
-            std::cerr << "Error trying to parse request.\n";
-            exit(EXIT_FAILURE);
+        if (optional) {
+            Request req = optional.value();
+            Response res{client, req.get_http_version()};
+
+            _router.resolve(req, res);
+        } else {
+            Response res{client, "HTTP/1.1"};
+            res.status(500).text(get_error_page(500)).send();
         }
-
-        Request req = optional.value();
-        Response res{client, req.get_http_version()};
-
-        _router(req, res);
 
         close(client);
     }
 }
 
-} // namespace simple_http
+} // namespace kshttp
