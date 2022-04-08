@@ -19,5 +19,3 @@ and run it by running the generated executable:
 The default program will listen to `localhost:8080` and respond with something AMAZING.
 
 That's pretty much it by now.
-
-# AAAAAAAAAAAAAA its actually broken right now because for some reason Catch2(testing framework) just won't compile, I'll try to solve it soon
